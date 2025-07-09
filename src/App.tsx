@@ -21,6 +21,7 @@ export default function App() {
   }, [])
   return (
     <div>
+      {data.length === 0 ? <h1>Keine Daten vorhanden!</h1> :
       <table>
         <thead>
           <tr>
@@ -40,7 +41,7 @@ export default function App() {
             </tr>
           )}
         </tbody>
-      </table>
+      </table>}
     </div>
   );
 }
