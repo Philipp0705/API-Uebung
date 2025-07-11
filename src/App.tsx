@@ -1,51 +1,55 @@
 import { useState, useEffect } from 'react'
 
 interface daten {
-    userId: number;
-    id: number;
-    title: string;
-    body: string;
+    userId: number,
+    id: number,
+    title: string,
+    body: string,
 }
 
 export default function App() {
     const [data, setData] = useState<daten[]>([])
     const [filter, setFilter] = useState("")
-    const [filterTextBox, setFilterTextBox] = useState("")
-
+    const [tbFilter, setTbFilter] = useState("")
     const [userId, setUserId] = useState("")
     const [id, setId] = useState("")
     const [title, setTitle] = useState("")
     const [body, setBody] = useState("")
 
+    useEffect(() => {
+        const timeout = setTimeout(() => {
+            setFilter(tbFilter)
+        }, 500)
+
+        return () => clearTimeout(timeout)
+    }, [tbFilter])
 
     useEffect(() => {
         fetch(filter === "" ? 'https://jsonplaceholder.typicode.com/posts' : `https://jsonplaceholder.typicode.com/posts?userId=${filter}`)
-            .then(daten => daten.json())
-            .then(neueDaten => setData(neueDaten))
+            .then(got => got.json())
+            .then(changed => setData(changed))
     }, [filter])
     return (
         <div>
             <>
-            <input type="number" placeholder="UserID" value={userId} onChange={(e) => setUserId(e.target.value)} /> 
-            <input type="number" placeholder="ID" value={id} onChange={(e) => setId(e.target.value)} /> 
-            <input type="text" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} /> 
-            <input type="text" placeholder="Body" value={body} onChange={(e) => setBody(e.target.value)} /> 
-            <button onClick={() => {
-                const sendData = {userId:userId, id:id, title:title, body:body}
-                fetch('https://jsonplaceholder.typicode.com/posts',{
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(sendData)
-                })
-                .then(getData => getData.json())
-                .then(jsondata => {
-                    setData([jsondata, ...data])
-                })
-            }}>Send Data to API</button>
+                <input type="number" placeholder="UserID" value={userId} onChange={(e) => setUserId(e.target.value)} />
+                <input type="number" placeholder="ID" value={id} onChange={(e) => setId(e.target.value)} />
+                <input type="text" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
+                <input type="text" placeholder="Body" value={body} onChange={(e) => setBody(e.target.value)} />
+                <button onClick={() => {
+                    const newData = { userId: userId, id: id, title: title, body: body }
+                    fetch('https://jsonplaceholder.typicode.com/posts', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(newData)
+                    })
+                        .then(getdata => getdata.json())
+                        .then(newgetdata => setData([newgetdata, ...data]))
+                }}>Send Data to API</button>
             </>
+            <br />
             <>
-                <input type="number" placeholder="Filter nach User ID" value={filterTextBox} onChange={(e) => setFilterTextBox(e.target.value)} />
-                <button onClick={() => setFilter(filterTextBox)}>Filter</button>
+                <input type="number" placeholder="Filter nach UserID" value={tbFilter} onChange={(e) => setTbFilter(e.target.value)} />
             </>
             <>
                 <table>
